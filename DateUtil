@@ -1,6 +1,8 @@
 package com.zhy.test;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +24,7 @@ public class DateUtil {
         if(currentPage != 1 ){
             startLocalDate = startLocalDate.plusMonths((currentPage-1)*pageSize).with(TemporalAdjusters.firstDayOfMonth());
         }
-        if(startLocalDate.plusMonths(9).with(TemporalAdjusters.lastDayOfMonth()).isBefore(endLocalDate)){
+        if(startLocalDate.plusMonths(pageSize-1).with(TemporalAdjusters.lastDayOfMonth()).isBefore(endLocalDate)){
             endLocalDate = startLocalDate.plusMonths(pageSize-1).with(TemporalAdjusters.lastDayOfMonth());
         };
 		int months = (endLocalDate.getYear()*12 + endLocalDate.getMonthValue()) - (startLocalDate.getYear()*12 + startLocalDate.getMonthValue())+1;
@@ -37,6 +39,44 @@ public class DateUtil {
 			}else{
 				map.put("startDate",startLocalDate.plusMonths(i).with(TemporalAdjusters.firstDayOfMonth()).toString());
 				map.put("endDate",startLocalDate.plusMonths(i).with(TemporalAdjusters.lastDayOfMonth()).toString());
+			}
+			list.add(map);
+		}
+		return list;
+	}
+	
+	/**
+	 * 功能描述: 获取时间段按周分组集合
+	 * 
+	 * @param: 开始时间、结束时间、当前页数、页面显示数
+	 * @return: 分组集合
+	 */
+	public static List getWeekRange(String startDate, String endDate, Integer currentPage, Integer pageSize){
+		List list = new ArrayList();
+		LocalDate startLocalDate = LocalDate.parse(startDate);
+		LocalDate endLocalDate = LocalDate.parse(endDate);
+        if(currentPage != 1){
+            startLocalDate = startLocalDate.plusWeeks((currentPage-1)*pageSize).with(DayOfWeek.MONDAY);
+        }
+        if(startLocalDate.plusWeeks(pageSize-1).with(DayOfWeek.SUNDAY).isBefore(endLocalDate)){
+            endLocalDate = startLocalDate.plusWeeks(pageSize-1).with(DayOfWeek.SUNDAY);
+        };
+		int weeks = (int)startLocalDate.until(endLocalDate,ChronoUnit.WEEKS) + 1;
+		if(endLocalDate.isBefore(startLocalDate)){
+			weeks = 0;
+		}
+		for(int i = 0; i < weeks; i++){
+			Map map = new HashMap();
+			if(i == 0){
+				map.put("startDate",startLocalDate.toString());
+				map.put("endDate",startLocalDate.with(DayOfWeek.SUNDAY).toString());
+			}else if(i == weeks-1){
+				map.put("startDate",startLocalDate.plusWeeks(i).with(DayOfWeek.MONDAY).toString());
+				map.put("endDate",endLocalDate.toString());
+			}
+			else{
+				map.put("startDate",startLocalDate.plusWeeks(i).with(DayOfWeek.MONDAY).toString());
+				map.put("endDate",startLocalDate.plusWeeks(i).with(DayOfWeek.SUNDAY).toString());
 			}
 			list.add(map);
 		}
