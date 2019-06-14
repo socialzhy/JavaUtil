@@ -21,12 +21,12 @@ public class DateUtil {
 		List list = new ArrayList();
 		LocalDate startLocalDate = LocalDate.parse(startDate);
 		LocalDate endLocalDate = LocalDate.parse(endDate);
-        if(currentPage != 1 ){
-            startLocalDate = startLocalDate.plusMonths((currentPage-1)*pageSize).with(TemporalAdjusters.firstDayOfMonth());
-        }
-        if(startLocalDate.plusMonths(pageSize-1).with(TemporalAdjusters.lastDayOfMonth()).isBefore(endLocalDate)){
-            endLocalDate = startLocalDate.plusMonths(pageSize-1).with(TemporalAdjusters.lastDayOfMonth());
-        };
+		if(currentPage != 1 ){
+		    startLocalDate = startLocalDate.plusMonths((currentPage-1)*pageSize).with(TemporalAdjusters.firstDayOfMonth());
+		}
+		if(startLocalDate.plusMonths(pageSize-1).with(TemporalAdjusters.lastDayOfMonth()).isBefore(endLocalDate)){
+		    endLocalDate = startLocalDate.plusMonths(pageSize-1).with(TemporalAdjusters.lastDayOfMonth());
+		};
 		int months = (endLocalDate.getYear()*12 + endLocalDate.getMonthValue()) - (startLocalDate.getYear()*12 + startLocalDate.getMonthValue())+1;
 		for(int i = 0; i < months; i++){
 			Map map = new HashMap();
@@ -55,12 +55,12 @@ public class DateUtil {
 		List list = new ArrayList();
 		LocalDate startLocalDate = LocalDate.parse(startDate);
 		LocalDate endLocalDate = LocalDate.parse(endDate);
-        if(currentPage != 1){
-            startLocalDate = startLocalDate.plusWeeks((currentPage-1)*pageSize).with(DayOfWeek.MONDAY);
-        }
-        if(startLocalDate.plusWeeks(pageSize-1).with(DayOfWeek.SUNDAY).isBefore(endLocalDate)){
-            endLocalDate = startLocalDate.plusWeeks(pageSize-1).with(DayOfWeek.SUNDAY);
-        };
+		if(currentPage != 1){
+		    startLocalDate = startLocalDate.plusWeeks((currentPage-1)*pageSize).with(DayOfWeek.MONDAY);
+		}
+		if(startLocalDate.plusWeeks(pageSize-1).with(DayOfWeek.SUNDAY).isBefore(endLocalDate)){
+		    endLocalDate = startLocalDate.plusWeeks(pageSize-1).with(DayOfWeek.SUNDAY);
+		};
 		int weeks = (int)startLocalDate.until(endLocalDate,ChronoUnit.WEEKS) + 1;
 		if(endLocalDate.isBefore(startLocalDate)){
 			weeks = 0;
