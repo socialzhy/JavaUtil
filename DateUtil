@@ -83,6 +83,165 @@ public class DateUtil {
 		return list;
 	}
 	
+		/**
+	 *
+	 * 功能描述: 获取时间段按年分组集合
+	 *
+	 * @param:
+	 * @return:
+	 * @auther: Zhy
+	 * @date:  09:40 2019/6/10 0010
+	 */
+	public static List getYearRange(String startDate , String endDate ,Integer pageSize , String flag){
+		List list = new ArrayList();
+		LocalDate startLocalDate = LocalDate.parse(startDate);
+		LocalDate endLocalDate = LocalDate.parse(endDate);
+        if("1".equals(flag)){
+            if(pageSize != 1){
+                startLocalDate = startLocalDate.plusYears((pageSize - 1)*10).with(TemporalAdjusters.firstDayOfYear());
+            }
+            if(startLocalDate.plusYears(9).with(TemporalAdjusters.lastDayOfYear()).isBefore(endLocalDate)){
+                endLocalDate = startLocalDate.plusYears(9).with(TemporalAdjusters.lastDayOfYear());
+            };
+        }
+		int years = endLocalDate.getYear() - startLocalDate.getYear() + 1;
+		for(int i = 0; i < years; i++){
+			Map map = new HashMap();
+			if(i == 0){
+				map.put("startDate",startLocalDate.toString());
+				map.put("endDate",startLocalDate.with(TemporalAdjusters.lastDayOfYear()).toString());
+			}else if(i == years-1){
+				map.put("startDate",startLocalDate.plusYears(i).with(TemporalAdjusters.firstDayOfYear()).toString());
+				map.put("endDate",endLocalDate.toString());
+			}
+			else{
+				map.put("startDate",startLocalDate.plusYears(i).with(TemporalAdjusters.firstDayOfYear()).toString());
+				map.put("endDate",startLocalDate.plusYears(i).with(TemporalAdjusters.lastDayOfYear()).toString());
+			}
+			list.add(map);
+		}
+
+		return list;
+	}
+
+	/**
+	 *
+	 * 功能描述: 获取时间段按半年分组集合
+	 *
+	 * @param:
+	 * @return:
+	 * @auther: Zhy
+	 * @date:  14:36 2019/6/10 0010
+	 */
+	public static List getHalfYearRange(String startDate , String endDate ,Integer pageSize , String flag){
+		List list = new ArrayList();
+		LocalDate startLocalDate = LocalDate.parse(startDate);
+		LocalDate endLocalDate = LocalDate.parse(endDate);
+		HashMap firstDateMap = new HashMap();
+		String firstEndDate = null;
+		if(startLocalDate.getMonthValue() > 6){
+			firstEndDate = startLocalDate.with(TemporalAdjusters.lastDayOfYear()).toString();
+		}else {
+			firstEndDate = startLocalDate.getYear()+"-"+"06"+"-"+"30";
+		}
+        LocalDate secondStartDate = null;
+		if("1".equals(flag)){
+            secondStartDate = LocalDate.parse(firstEndDate).plusDays(1).plusMonths(6*9*(pageSize-1));
+            if(secondStartDate.plusMonths(6*8+5).with(TemporalAdjusters.lastDayOfMonth()).isBefore(endLocalDate)){
+                endLocalDate = secondStartDate.plusMonths(6*8+5).with(TemporalAdjusters.lastDayOfMonth());
+            }
+        }else{
+            secondStartDate = LocalDate.parse(firstEndDate).plusDays(1);
+        }
+
+		if(pageSize == 1 || "2".equals(flag)){
+			firstDateMap.put("startDate",startLocalDate.toString());
+			firstDateMap.put("endDate",firstEndDate);
+			list.add(firstDateMap);
+		}
+
+		int months = (endLocalDate.getYear()*12 + endLocalDate.getMonthValue()) - (secondStartDate.getYear()*12 + secondStartDate.getMonthValue());
+		if(months < 0){
+			return list;
+		}
+		int halfYears = (months/6) + 1;
+		for(int i = 0; i < halfYears; i++){
+			Map map = new HashMap();
+			if(i == halfYears-1){
+				map.put("startDate",secondStartDate.plusMonths(i*6).toString());
+				map.put("endDate",endLocalDate.toString());
+			}else{
+				map.put("startDate",secondStartDate.plusMonths(i*6).toString());
+				map.put("endDate",secondStartDate.plusMonths(i*6+5).with(TemporalAdjusters.lastDayOfMonth()).toString());
+			}
+			list.add(map);
+		}
+
+		return list;
+	}
+
+	/**
+	 *
+	 * 功能描述: 获取时间段按季度分组集合
+	 *
+	 * @param:
+	 * @return:
+	 * @auther: Zhy
+	 * @date:  14:37 2019/6/10 0010
+	 */
+	public static List getQuarterRange(String startDate , String endDate ,Integer pageSize , String flag){
+		List list = new ArrayList();
+		LocalDate startLocalDate = LocalDate.parse(startDate);
+		LocalDate endLocalDate = LocalDate.parse(endDate);
+		HashMap firstDateMap = new HashMap();
+		String firstEndDate = null;
+		if(startLocalDate.getMonthValue() > 6){
+			if(startLocalDate.getMonthValue() > 9){
+				firstEndDate = startLocalDate.getYear()+"-"+"12"+"-"+"31";
+			}else{
+				firstEndDate = startLocalDate.getYear()+"-"+"09"+"-"+"30";
+			}
+		}else{
+			if(startLocalDate.getMonthValue() < 3){
+				firstEndDate = startLocalDate.getYear()+"-"+"03"+"-"+"31";
+			}else{
+				firstEndDate = startLocalDate.getYear()+"-"+"06"+"-"+"30";
+			}
+		}
+		LocalDate secondStartDate = null;
+        if("1".equals(flag)){
+            secondStartDate = LocalDate.parse(firstEndDate).plusDays(1).plusMonths(3*9*(pageSize-1));
+            if(secondStartDate.plusMonths(3*8+2).with(TemporalAdjusters.lastDayOfMonth()).isBefore(endLocalDate)){
+                endLocalDate = secondStartDate.plusMonths(3*8+2).with(TemporalAdjusters.lastDayOfMonth());
+            }
+        }else{
+            secondStartDate = LocalDate.parse(firstEndDate).plusDays(1);
+        }
+		if(pageSize == 1 || "2".equals(flag)){
+			firstDateMap.put("startDate",startLocalDate.toString());
+			firstDateMap.put("endDate",firstEndDate);
+			list.add(firstDateMap);
+		}
+		int months = (endLocalDate.getYear()*12 + endLocalDate.getMonthValue()) - (secondStartDate.getYear()*12 + secondStartDate.getMonthValue());
+		if(months < 0){
+			return list;
+		}
+		int quarters = (months/3) + 1;
+		for(int i = 0; i < quarters; i++){
+			Map map = new HashMap();
+			if(i == quarters-1){
+				map.put("startDate",secondStartDate.plusMonths(i*3).toString());
+				map.put("endDate",endLocalDate.toString());
+			}else{
+				map.put("startDate",secondStartDate.plusMonths(i*3).toString());
+				map.put("endDate",secondStartDate.plusMonths(i*3+2).with(TemporalAdjusters.lastDayOfMonth()).toString());
+			}
+			list.add(map);
+		}
+
+		return list;
+	}
+	
 	public static void main(String[] args) {
 		String startDate = "2019-01-04";
 		String endDate = "2019-06-04";
